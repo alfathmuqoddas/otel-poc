@@ -42,11 +42,13 @@ docker-compose up -d --build
 
 Once the stack is running, you can access the various user interfaces:
 
-| Service         | URL                   | Credentials                  |
-| :-------------- | :-------------------- | :--------------------------- |
-| **Grafana**     | http://localhost:3000 | Anonymous access is enabled. |
-| **Prometheus**  | http://localhost:9090 | N/A                          |
-| **Node.js App** | http://localhost:8080 | N/A                          |
+| Service         | URL                    | Credentials                  |
+| :-------------- | :--------------------- | :--------------------------- |
+| **Grafana**     | http://localhost:6000  | Anonymous access is enabled. |
+| **Prometheus**  | http://localhost:9090  | N/A                          |
+| **Node.js App** | http://localhost:14400 | N/A                          |
+| **Loki**        | http://localhost:3100  | N/A                          |
+| **Tempo**       | http://localhost:3200  | N/A                          |
 
 In Grafana, you can navigate to the "Explore" tab to query metrics from Prometheus, logs from Loki, and traces from Tempo.
 

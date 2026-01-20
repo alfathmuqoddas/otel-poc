@@ -1,22 +1,26 @@
 // instrumentation.js
 import { NodeSDK } from "@opentelemetry/sdk-node";
-import { Resource } from "@opentelemetry/resources";
-import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
 import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
 import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
 import { SimpleLogRecordProcessor } from "@opentelemetry/sdk-logs";
 import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
+import { resourceFromAttributes } from "@opentelemetry/resources";
+import {
+  ATTR_SERVICE_NAME,
+  ATTR_SERVICE_VERSION,
+} from "@opentelemetry/semantic-conventions";
 
 const sdk = new NodeSDK({
-  resource: new Resource({
-    [ATTR_SERVICE_NAME]: process.env.OTEL_SERVICE_NAME || "node-app",
+  resource: resourceFromAttributes({
+    [ATTR_SERVICE_NAME]: "node-poc-service",
+    [ATTR_SERVICE_VERSION]: "1.0",
   }),
   // Traces -> Collector
-  traceExporter: new OTLPTraceExporter({
-    url: "http://otel-collector:4318/v1/traces",
-  }),
+  //   traceExporter: new OTLPTraceExporter({
+  //     url: "http://otel-collector:4318/v1/traces",
+  //   }),
   // Metrics -> Collector
   metricReader: new PeriodicExportingMetricReader({
     exporter: new OTLPMetricExporter({
