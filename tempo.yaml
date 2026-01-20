@@ -1,0 +1,29 @@
+server:
+  http_listen_port: 3200
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        http:
+        grpc:
+
+ingester:
+  max_block_duration: 5m # How long to keep traces in memory before flushing
+  trace_idle_period: 10s # How long to wait after the last span to consider a trace "finished"
+  max_block_bytes: 1000000 # Flush block to storage if it hits ~1MB
+
+compactor:
+  compaction:
+    compaction_window: 1h # How often to tidy up the storage
+    max_block_bytes: 100000000
+    block_retention: 24h # For a PoC, 24 hours of data is plenty
+    compacted_block_retention: 10m
+
+storage:
+  trace:
+    backend: local # Use the local filesystem instead of S3/GCS
+    wal:
+      path: /tmp/tempo/wal # Write Ahead Log (for crash recovery)
+    local:
+      path: /tmp/tempo/blocks # Where the actual trace data lives
