@@ -1,47 +1,41 @@
-// instrumentation.js
-import { NodeSDK } from "@opentelemetry/sdk-node";
-import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
-import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
-import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
-import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
-import { SimpleLogRecordProcessor } from "@opentelemetry/sdk-logs";
 import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
-import { resourceFromAttributes } from "@opentelemetry/resources";
+import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
+import { NodeSDK } from "@opentelemetry/sdk-node";
+import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-proto";
+import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-proto";
 import {
   ATTR_SERVICE_NAME,
   ATTR_SERVICE_VERSION,
 } from "@opentelemetry/semantic-conventions";
+import { resourceFromAttributes } from "@opentelemetry/resources";
+import { SimpleLogRecordProcessor } from "@opentelemetry/sdk-logs";
+
+console.log("initiating otel");
 
 const sdk = new NodeSDK({
   resource: resourceFromAttributes({
     [ATTR_SERVICE_NAME]: "node-poc-service",
-    [ATTR_SERVICE_VERSION]: "1.0",
+    [ATTR_SERVICE_VERSION]: "1.0.0",
   }),
-  // Traces -> Collector
-  //   traceExporter: new OTLPTraceExporter({
-  //     url: "http://otel-collector:4318/v1/traces",
-  //   }),
-  // Metrics -> Collector
+  // traceExporter: new ConsoleSpanExporter(),
   metricReader: new PeriodicExportingMetricReader({
     exporter: new OTLPMetricExporter({
       url: "http://otel-collector:4318/v1/metrics",
     }),
-    exportIntervalMillis: 5000,
+    exportIntervalMillis: 1000,
   }),
-  // Logs -> Collector
-  logRecordProcessor: new SimpleLogRecordProcessor(
-    new OTLPLogExporter({ url: "http://otel-collector:4318/v1/logs" }),
-  ),
-  // The Multipack!
+  logRecordProcessors: [
+    new SimpleLogRecordProcessor(
+      new OTLPLogExporter({
+        url: "http://otel-collector:4318/v1/logs",
+      }),
+    ),
+  ],
   instrumentations: [getNodeAutoInstrumentations()],
 });
 
+console.log("starting otel");
+
 sdk.start();
 
-// Graceful shutdown to flush remaining spans/logs
-process.on("SIGTERM", () => {
-  sdk
-    .shutdown()
-    .then(() => console.log("OTel SDK shut down"))
-    .finally(() => process.exit(0));
-});
+console.log("OTel SDK (Metrics & Logs) started");

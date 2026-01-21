@@ -20,14 +20,17 @@ exporters:
     tls:
       insecure: true
 
+  debug:
+    verbosity: detailed
+
 service:
   pipelines:
     metrics:
       receivers: [otlp]
-      exporters: [prometheus]
+      exporters: [prometheus, debug]
     # traces:
     #   receivers: [otlp]
     #   exporters: [otlp]
     logs:
       receivers: [otlp]
-      exporters: [otlphttp/loki]
+      exporters: [otlphttp/loki, debug]

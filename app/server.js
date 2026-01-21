@@ -1,11 +1,10 @@
 import express from "express";
-import pino from "pino";
+import winston from "winston";
 
-const logger = pino(
-  pino.transport({
-    target: "pino-opentelemetry-transport",
-  }),
-);
+// Just use a standard pino logger.
+// The OTel Auto-Instrumentation will intercept these logs
+// IF the instrumentation.js is loaded correctly.
+const logger = winston.createLogger();
 
 const app = express();
 const port = 8080;
@@ -21,6 +20,6 @@ app.get("/error", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`App listening at http://localhost:${port}`);
+  // console.log(`App listening at http://localhost:${port}`);
   logger.info(`Server started on port ${port}`);
 });
