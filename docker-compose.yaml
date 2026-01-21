@@ -40,16 +40,16 @@ services:
     networks: [otel-poc-network]
 
   # 5. Tempo (Traces)
-  # tempo:
-  #   image: grafana/tempo:latest
-  #   command: ["-config.file=/etc/tempo.yaml"]
-  #   user: "0"
-  #   volumes:
-  #     - ./tempo.yaml:/etc/tempo.yaml
-  #   ports:
-  #     - "3200:3200"
-  #     - "5317:4317"
-  #   networks: [otel-poc-network]
+  tempo:
+    image: grafana/tempo:latest
+    command: ["-config.file=/etc/tempo.yaml"]
+    user: "0"
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml
+    ports:
+      - "3200:3200"
+      - "5317:4317"
+    networks: [otel-poc-network]
 
   # 6. Grafana (Dashboard)
   grafana:
